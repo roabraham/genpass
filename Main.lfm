@@ -1,0 +1,266 @@
+object MainForm: TMainForm
+  Left = 410
+  Height = 420
+  Top = 150
+  Width = 500
+  AutoSize = True
+  BorderWidth = 10
+  Caption = 'GenPass - Random Password Generator'
+  ClientHeight = 420
+  ClientWidth = 500
+  Color = clBtnFace
+  Constraints.MaxHeight = 420
+  Constraints.MaxWidth = 500
+  Constraints.MinHeight = 420
+  Constraints.MinWidth = 500
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  FormStyle = fsSystemStayOnTop
+  OnCreate = FormCreate
+  Position = poScreenCenter
+  LCLVersion = '1.4.0.4'
+  object Bevel2: TBevel
+    Left = 0
+    Height = 419
+    Top = 0
+    Width = 500
+    Anchors = [akTop, akLeft, akRight, akBottom]
+  end
+  object GroupBox1: TGroupBox
+    Left = 8
+    Height = 136
+    Top = 8
+    Width = 305
+    Caption = 'Password properties'
+    ClientHeight = 118
+    ClientWidth = 301
+    TabOrder = 0
+    object Label1: TLabel
+      Left = 6
+      Height = 13
+      Top = 10
+      Width = 140
+      Caption = 'Password length (characters):'
+      ParentColor = False
+    end
+    object SpinEdit1: TSpinEdit
+      Left = 158
+      Height = 21
+      Top = 10
+      Width = 137
+      MaxValue = 255
+      MinValue = 1
+      TabOrder = 0
+      Value = 20
+    end
+    object CheckBox1: TCheckBox
+      Left = 6
+      Height = 17
+      Top = 42
+      Width = 135
+      Caption = 'Affected by System Date'
+      Checked = True
+      State = cbChecked
+      TabOrder = 1
+    end
+    object CheckBox2: TCheckBox
+      Left = 6
+      Height = 17
+      Top = 66
+      Width = 135
+      Caption = 'Affected by System Time'
+      Checked = True
+      State = cbChecked
+      TabOrder = 2
+    end
+    object CheckBox3: TCheckBox
+      Left = 6
+      Height = 17
+      Top = 90
+      Width = 130
+      Caption = 'Filter Repeating Periods'
+      Checked = True
+      State = cbChecked
+      TabOrder = 3
+    end
+    object CheckBox5: TCheckBox
+      Left = 158
+      Height = 17
+      Top = 42
+      Width = 123
+      Caption = 'Force Up/Lower Case'
+      OnClick = CheckBox5Click
+      TabOrder = 4
+    end
+    object RadioButton1: TRadioButton
+      Left = 174
+      Height = 17
+      Top = 66
+      Width = 86
+      Caption = 'UPPER CASE'
+      Checked = True
+      Enabled = False
+      TabOrder = 5
+      TabStop = True
+    end
+    object RadioButton2: TRadioButton
+      Left = 174
+      Height = 17
+      Top = 90
+      Width = 69
+      Caption = 'lower case'
+      Enabled = False
+      TabOrder = 6
+    end
+  end
+  object GroupBox2: TGroupBox
+    Left = 8
+    Height = 73
+    Top = 272
+    Width = 305
+    Anchors = [akTop, akLeft, akBottom]
+    Caption = 'Password strength'
+    ClientHeight = 55
+    ClientWidth = 301
+    Enabled = False
+    TabOrder = 6
+    object Image1: TImage
+      Left = 6
+      Height = 33
+      Top = 10
+      Width = 289
+    end
+  end
+  object GroupBox3: TGroupBox
+    Left = 8
+    Height = 57
+    Top = 352
+    Width = 305
+    Anchors = [akLeft, akRight, akBottom]
+    Caption = 'Your password'
+    ClientHeight = 39
+    ClientWidth = 301
+    TabOrder = 3
+    object Edit1: TEdit
+      Left = 6
+      Height = 21
+      Top = 10
+      Width = 289
+      Anchors = [akTop, akLeft, akRight, akBottom]
+      OnChange = Edit1Change
+      ReadOnly = True
+      TabOrder = 0
+      Text = 'PASSWORD'
+    end
+  end
+  object Memo1: TMemo
+    Left = 320
+    Height = 337
+    Top = 8
+    Width = 169
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    Lines.Strings = (
+      'GenPass - Random Password '
+      'Generator'
+      ''
+      'Developer: Robert Abraham'
+      'This program was built for '
+      'creating long, difficult, random '
+      'passwords which are hard to '
+      'hack - mainly for internet '
+      'accounts.'
+      'If you have any problems with '
+      'this application, please mail '
+      'me:info@roabraham.com'
+      ''
+      '(Note: the recommended '
+      'password is at least 10 '
+      'characters long with the filter '
+      'enabled. Keep your password '
+      'away from others!)'
+    )
+    ReadOnly = True
+    ScrollBars = ssAutoVertical
+    TabOrder = 5
+  end
+  object Button2: TButton
+    Left = 320
+    Height = 25
+    Top = 384
+    Width = 169
+    Anchors = [akRight, akBottom]
+    Caption = 'Quit'
+    OnClick = Button2Click
+    TabOrder = 4
+  end
+  object Button1: TButton
+    Left = 320
+    Height = 25
+    Top = 352
+    Width = 169
+    Anchors = [akRight, akBottom]
+    Caption = 'Generate'
+    Default = True
+    OnClick = Button1Click
+    TabOrder = 2
+  end
+  object GroupBox4: TGroupBox
+    Left = 8
+    Height = 113
+    Top = 152
+    Width = 305
+    Caption = 'Serial Number'
+    ClientHeight = 95
+    ClientWidth = 301
+    TabOrder = 1
+    object Label2: TLabel
+      Left = 62
+      Height = 13
+      Top = 34
+      Width = 81
+      Caption = 'Segment Length:'
+      Enabled = False
+      ParentColor = False
+    end
+    object Label3: TLabel
+      Left = 94
+      Height = 13
+      Top = 66
+      Width = 49
+      Caption = 'Separator:'
+      Enabled = False
+      ParentColor = False
+    end
+    object CheckBox4: TCheckBox
+      Left = 6
+      Height = 17
+      Top = 10
+      Width = 194
+      Caption = 'Generate Password as Serial Number'
+      OnClick = CheckBox4Click
+      TabOrder = 0
+    end
+    object SpinEdit2: TSpinEdit
+      Left = 158
+      Height = 21
+      Top = 34
+      Width = 137
+      Enabled = False
+      MaxValue = 127
+      MinValue = 1
+      TabOrder = 1
+      Value = 5
+    end
+    object Edit2: TEdit
+      Left = 158
+      Height = 21
+      Top = 66
+      Width = 137
+      Enabled = False
+      MaxLength = 1
+      TabOrder = 2
+      Text = '-'
+    end
+  end
+end
