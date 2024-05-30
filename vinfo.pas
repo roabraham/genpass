@@ -86,13 +86,12 @@ begin
   Stream := TResourceStream.CreateFromID(Instance, 1, PChar(RT_VERSION));
   try
     FVersResource.SetCustomRawDataStream(Stream);
-    // access some property to load from the stream
+    //Access some property to load from the stream
     FVersResource.FixedInfo;
-    // clear the stream
+    //Clear the stream
     FVersResource.SetCustomRawDataStream(nil);
   finally
     Stream.Free;
   end;
 end;
 end.
-
