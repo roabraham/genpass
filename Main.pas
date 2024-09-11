@@ -4,9 +4,12 @@ interface
 
 uses
   LCLIntf, LCLType, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, ExtCtrls, StdCtrls, Spin, Math, Encode, vinfo;
+  Dialogs, ExtCtrls, StdCtrls, Spin, DOM, XMLWrite, XMLRead, Math, Encode, vinfo;
 
 type
+
+  { TMainForm }
+
   TMainForm = class(TForm)
     GroupBox1: TGroupBox;
     Label1: TLabel;
@@ -31,12 +34,13 @@ type
     CheckBox5: TCheckBox;
     RadioButton1: TRadioButton;
     RadioButton2: TRadioButton;
+    procedure CheckBox4Change(Sender: TObject);
+    procedure CheckBox5Change(Sender: TObject);
+    procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormCreate (Sender: TObject);
     procedure Button2Click (Sender: TObject);
     procedure Button1Click (Sender: TObject);
-    procedure CheckBox4Click (Sender: TObject);
     procedure Edit1Change (Sender: TObject);
-    procedure CheckBox5Click (Sender: TObject);
   private
     { Private declarations }
     PWLength: Integer;
@@ -46,6 +50,7 @@ type
     procedure CheckStrength (Password: String; Base: Integer);
   public
     { Public declarations }
+    config_filepath: ansistring;
   end;
 
 var
@@ -56,13 +61,151 @@ implementation
 {$R *.lfm}
 
 procedure TMainForm.FormCreate (Sender: TObject);
-var version_info: TVersionInfo;
+var
+  version_info: TVersionInfo;
+  XMLDoc: TXMLDocument;
+  RootNode, SettingsNode: TDOMNode;
+  SettingNode: TDOMNode;
 begin
   Randomize;
   version_info := TVersionInfo.Create;
   version_info.Load(HINSTANCE);
   Caption := trim(Application.Title) + ' v' + trim(version_info.FileVersion);
+  config_filepath := extractfilepath(Application.ExeName)+'config.xml';
+  if fileexists(config_filepath) then
+  begin
+    try
+      ReadXMLFile(XMLDoc, config_filepath);
+      RootNode := XMLDoc.DocumentElement;
+      SettingsNode := RootNode.FindNode('FormSettings');
+      if Assigned(SettingsNode) then
+      begin
+        SettingNode := SettingsNode.FindNode('SpinEdit1Value');
+        if Assigned(SettingNode) then SpinEdit1.Value := StrToIntDef(SettingNode.TextContent, SpinEdit1.MinValue);
+        SettingNode := SettingsNode.FindNode('CheckBox1Checked');
+        if Assigned(SettingNode) then CheckBox1.Checked := StrToBoolDef(SettingNode.TextContent, False);
+        SettingNode := SettingsNode.FindNode('CheckBox2Checked');
+        if Assigned(SettingNode) then CheckBox2.Checked := StrToBoolDef(SettingNode.TextContent, False);
+        SettingNode := SettingsNode.FindNode('CheckBox3Checked');
+        if Assigned(SettingNode) then CheckBox3.Checked := StrToBoolDef(SettingNode.TextContent, False);
+        SettingNode := SettingsNode.FindNode('CheckBox4Checked');
+        if Assigned(SettingNode) then CheckBox4.Checked := StrToBoolDef(SettingNode.TextContent, False);
+        SettingNode := SettingsNode.FindNode('CheckBox5Checked');
+        if Assigned(SettingNode) then CheckBox5.Checked := StrToBoolDef(SettingNode.TextContent, False);
+        SettingNode := SettingsNode.FindNode('RadioButton1Checked');
+        if Assigned(SettingNode) then RadioButton1.Checked := StrToBoolDef(SettingNode.TextContent, False);
+        SettingNode := SettingsNode.FindNode('RadioButton2Checked');
+        if Assigned(SettingNode) then RadioButton2.Checked := StrToBoolDef(SettingNode.TextContent, False);
+        SettingNode := SettingsNode.FindNode('SpinEdit2Value');
+        if Assigned(SettingNode) then SpinEdit2.Value := StrToIntDef(SettingNode.TextContent, SpinEdit2.MinValue);
+        SettingNode := SettingsNode.FindNode('Edit2Text');
+        if Assigned(SettingNode) then Edit2.Text := SettingNode.TextContent;
+      end;
+    finally
+      XMLDoc.Free;
+    end;
+  end;
   CreatePassword;
+end;
+
+procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+  XMLDoc: TXMLDocument;
+  RootNode, SettingsNode, SettingNode: TDOMElement;
+begin
+  try
+    // Create a new XML document
+    XMLDoc := TXMLDocument.Create;
+    // Create root node and add to document
+    RootNode := XMLDoc.CreateElement('Configuration');
+    XMLDoc.AppendChild(RootNode);
+    RootNode := XMLDoc.DocumentElement;
+    // Create a node to hold the settings
+    SettingsNode := XMLDoc.CreateElement('FormSettings');
+    RootNode.AppendChild(SettingsNode);
+    // Add SpinEdit1 value in a separate node
+    SettingNode := XMLDoc.CreateElement('SpinEdit1Value');
+    SettingNode.TextContent := IntToStr(SpinEdit1.Value);
+    SettingsNode.AppendChild(SettingNode);
+    // Add CheckBox1 value in a separate node
+    SettingNode := XMLDoc.CreateElement('CheckBox1Checked');
+    SettingNode.TextContent := BoolToStr(CheckBox1.Checked, True);
+    SettingsNode.AppendChild(SettingNode);
+    // Add CheckBox2 value in a separate node
+    SettingNode := XMLDoc.CreateElement('CheckBox2Checked');
+    SettingNode.TextContent := BoolToStr(CheckBox2.Checked, True);
+    SettingsNode.AppendChild(SettingNode);
+    // Add CheckBox3 value in a separate node
+    SettingNode := XMLDoc.CreateElement('CheckBox3Checked');
+    SettingNode.TextContent := BoolToStr(CheckBox3.Checked, True);
+    SettingsNode.AppendChild(SettingNode);
+    // Add CheckBox4 value in a separate node
+    SettingNode := XMLDoc.CreateElement('CheckBox4Checked');
+    SettingNode.TextContent := BoolToStr(CheckBox4.Checked, True);
+    SettingsNode.AppendChild(SettingNode);
+    // Add CheckBox5 value in a separate node
+    SettingNode := XMLDoc.CreateElement('CheckBox5Checked');
+    SettingNode.TextContent := BoolToStr(CheckBox5.Checked, True);
+    SettingsNode.AppendChild(SettingNode);
+    // Add RadioButton1 value in a separate node
+    SettingNode := XMLDoc.CreateElement('RadioButton1Checked');
+    SettingNode.TextContent := BoolToStr(RadioButton1.Checked, True);
+    SettingsNode.AppendChild(SettingNode);
+    // Add RadioButton2 value in a separate node
+    SettingNode := XMLDoc.CreateElement('RadioButton2Checked');
+    SettingNode.TextContent := BoolToStr(RadioButton2.Checked, True);
+    SettingsNode.AppendChild(SettingNode);
+    // Add SpinEdit2 value in a separate node
+    SettingNode := XMLDoc.CreateElement('SpinEdit2Value');
+    SettingNode.TextContent := IntToStr(SpinEdit2.Value);
+    SettingsNode.AppendChild(SettingNode);
+    // Add Edit2.Text value in a separate node
+    SettingNode := XMLDoc.CreateElement('Edit2Text');
+    SettingNode.TextContent := Edit2.Text;
+    SettingsNode.AppendChild(SettingNode);
+    WriteXMLFile(XMLDoc, config_filepath);
+  finally
+    XMLDoc.Free;
+  end;
+end;
+
+procedure TMainForm.CheckBox5Change(Sender: TObject);
+begin
+  if CheckBox5.Checked = True then
+  begin
+    RadioButton1.Enabled := True;
+    RadioButton2.Enabled := True;
+  end
+  else begin
+    RadioButton1.Enabled := False;
+    RadioButton2.Enabled := False;
+  end;
+end;
+
+procedure TMainForm.CheckBox4Change(Sender: TObject);
+begin
+  if CheckBox4.Checked = True then
+  begin
+    Label2.Enabled := True;
+    SpinEdit2.Enabled := True;
+    Label3.Enabled := True;
+    Edit2.Enabled := True;
+    PWLength := SpinEdit1.Value;
+    SpinEdit1.Value := 25;
+    CheckBox5.Enabled := False;
+    RadioButton1.Enabled := False;
+    RadioButton2.Enabled := False;
+  end
+  else begin
+    Label2.Enabled := False;
+    SpinEdit2.Enabled := False;
+    Label3.Enabled := False;
+    Edit2.Enabled := False;
+    SpinEdit1.Value := PWLength;
+    CheckBox5.Enabled := True;
+    RadioButton1.Enabled := CheckBox5.Checked;
+    RadioButton2.Enabled := CheckBox5.Checked;
+  end;
 end;
 
 procedure TMainForm.Button2Click (Sender: TObject);
@@ -263,51 +406,12 @@ begin
   CreatePassword;
 end;
 
-procedure TMainForm.CheckBox4Click (Sender: TObject);
-begin
-  if CheckBox4.Checked = True then
-  begin
-    Label2.Enabled := True;
-    SpinEdit2.Enabled := True;
-    Label3.Enabled := True;
-    Edit2.Enabled := True;
-    PWLength := SpinEdit1.Value;
-    SpinEdit1.Value := 25;
-    CheckBox5.Enabled := False;
-    RadioButton1.Enabled := False;
-    RadioButton2.Enabled := False;
-  end
-  else begin
-    Label2.Enabled := False;
-    SpinEdit2.Enabled := False;
-    Label3.Enabled := False;
-    Edit2.Enabled := False;
-    SpinEdit1.Value := PWLength;
-    CheckBox5.Enabled := True;
-    RadioButton1.Enabled := CheckBox5.Checked;
-    RadioButton2.Enabled := CheckBox5.Checked;
-  end;
-end;
-
 procedure TMainForm.Edit1Change (Sender: TObject);
 var PASSWD: String;
 begin
   //Check Password Strength
   PASSWD := Edit1.Text;
   CheckStrength(PASSWD, 10);
-end;
-
-procedure TMainForm.CheckBox5Click (Sender: TObject);
-begin
-  if CheckBox5.Checked = True then
-  begin
-    RadioButton1.Enabled := True;
-    RadioButton2.Enabled := True;
-  end
-  else begin
-    RadioButton1.Enabled := False;
-    RadioButton2.Enabled := False;
-  end;
 end;
 
 end.
